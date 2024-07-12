@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <title>TANGIBLY</title>
+    <style>
+        /* New loader */
+        #loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    #loader {
+        width: frameWidth; /* Width of a single frame */
+        height: frameHeight; /* Height of a single frame */
+        background-repeat: no-repeat;
+        animation: playFrames 1s steps(5) infinite;
+    }
+
+            #loading-message {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            @keyframes playFrames {
+        from { background-position: 0 0; }
+        to { background-position: -totalWidth 0; }
+    }
+    @keyframes roam {
+        0% { left: 0; }
+        100% { left: 100%; }
+    }
+    .footer{
+        background-color:#fff;
+        height: 100px;
+        margin-top: 60px;
+        box-shadow: 0px 0px 50px 0px rgb(0 0 0 / 20%);
+    }
+    .footer-text {
+      padding-top: 40px;
+    }
+
+
+    .modal-body-1 {
+        height: 176px;
+        padding: 52px 0 0 111px;
+
+}
+    .modal-btn {
+        margin-top: 20px;
+    }
+
+    .modal-btn button {
+        margin-right: 10px;
+         width: 120px;
+    }
+
+
+    .modal-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.modal-body h3 {
+    text-align: center; /* Optionally, if you want to center the text within the h3 element */
+}
+
+    .modal-btn2 {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        height: 8vh;
+        padding-bottom: 20px;
+    }
+
+    .modal-btn2 button {
+         width: 120px;
+    }
+    }
+
+    </style>
+</head>
+
+<body>
+<div class="header">
+    <img src="static/Tangibly-Logo-Color-pdf.png" height="70px">
+</div>
+<div id="loader-overlay">
+    <div id="loading-message">
+        <div id="loader">
+            <img src="static/loading.gif" alt="Loading Animation"/>
+        </div>
+        Please wait...
+    </div>
+</div>
+
+
+<div class="container mt-2">
+    <!--  Form Section  -->
+
+<div class="section mt-2">
+    <form method="post" enctype="multipart/form-data" id="yourFormId" onsubmit="return validateForm()">
+        <br><br>
+        <h3 class="mb-4">Start New Project:</h3>
+        <div class="row">
+            <div class="col-4">
+                <br>
+                <div class="form-group">
+                    <label for="trainingFileUploader">Upload file (.xlsx)</label>
+                    <div class="custom-file">
+                        <input type="file" name="training_file" class="custom-file-input form-control" id="trainingFileUploader"
+                              accept=".xlsx" onchange="trainingFileUploaderUpdateLabel()">
+                        <label class="custom-file-label" for="trainingFileUploader" id="trainingFileUploaderLabel">Training File</label>
+                    </div>
+                    <small id="trainingFileUploaderHelp" class="form-text text-muted">Upload an XLSX file.</small>
+                </div>
+                <p>OR</p>
+                <div class="form-group">
+                    <label for="client_name">Enter Your Case Name</label>
+                    <input type="text" class="form-control" name="client_name" id="client_name" aria-describedby="clientNameHelp" placeholder="Enter Your Name"/>
+                    <!-- <small id="clientNameHelp" class="form-text text-muted">Name that will be shown in the table.</small> -->
+                </div><br><br>
+                <div class="form-group">
+                    <label for="review">Enter Review Number</label>
+                    <input type="number" class="form-control" name="review" id="review" aria-describedby="reviewNumberHelp" placeholder="Enter review number, eg:001" required/>
+                    <!-- <small id="clientNameHelp" class="form-text text-muted">Name that will be shown in the table.</small> -->
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="promptText">Prompt</label>
+                    <a class="anchor_link" id="generatePrompt">Create a summary for CASES</a>
+                    <textarea class="form-control" name="prompt" id="promptText" rows="12" style="height: 500px; width: 700px;">{% for promptdata in prompt_list %}{{promptdata.text}}{% endfor %}</textarea>
+                    <small id="promptTextHelp" class="form-text text-muted">Enter prompt for the model.</small>
+                </div>
+            </div>
+
+<!--            <div class="col-4">-->
+
+        </div>
+        <div class="col-6" style="margin-left: 395px;">
+        <div class="form-group">
+                    <label class="mr-2" style="margin-top:20px;">Select File Type:</label>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <input style="margin: 4px -20px 0;" class="form-check-input" type="radio" name="file_type" id="pdfRadio" value="pdf" checked>
+                            <label class="form-check-label" for="pdfRadio">PDF</label>
+                        </div>
+                        <div class="col-lg-2">
+                            <input style="margin: 4px -20px 0;" class="form-check-input" type="radio" name="file_type" id="docRadio" value="doc">
+                            <label class="form-check-label" for="docRadio">DOC</label>
+                        </div>
+                        <div class="col-lg-2">
+                            <input style="margin: 4px -20px 0;" class="form-check-input" type="radio" name="file_type" id="csvRadio" value="csv">
+                            <label class="form-check-label" for="csvRadio">CSV</label>
+                        </div>
+                    </div>
+<!--                </div>-->
+            </div>
+            </div>
+
+        <br><br>
+        <div class="row">
+            <div class="col-12">
+                <h2 id="validationMessage" style="color: red;"></h2>
+                <h2 id="successMessage" align="center" style="color: green;"></h2>
+                <h2 id="errorMessage" align="center" style="color: red;"></h2>
+                <div class="d-grid gap-2 text-center">
+                    <button id="submit_btn" class="btn btn-primary btnFormSubmit" type="submit">Continue And Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+    <br>
+    <!--  Form Section End  -->
+
+
+    <!--  Table Section  -->
+    <div class="section mt-4" style="margin-bottom: 20px;">
+        <table class="customers" id="customers1">
+            <tr>
+                <th>S. NO.</th>
+<!--                <th>Client Name</th>-->
+                <th>Upload At</th>
+                <th>File</th>
+                <th>Status</th>
+                <th colspan="2">Action</th>
+            </tr>
+            {% for filedata in filedata_list %}
+            <tr>
+                <td width="80px">#{{ loop.index }}.</td>
+<!--                <td>{{ filedata.client_name }}</td>-->
+                <td><a href="/">{{ filedata.filename }}</a></td>
+                <td><a href="/">{{ filedata.uploaded_time.strftime('%Y-%m-%d %H:%M:%S') }}</a></td>
+                <td width="100px">
+                    <!--                    {% if filedata.status == True %}Success{% else %}Failed{% endif %}-->
+<!--                    {{filedata.status}}-->
+                    {% if filedata.status == "In Progress" %}
+                        <span style="color: gray;">{{ filedata.status }}</span>
+                    {% else %}
+                        <span style="color: green;">{{ filedata.status}}</span>
+                    {% endif %}
+                </td>
+                <td width="20px">
+                <span>
+
+                    <a data-id="{{ filedata.id }}"
+                       style="font-size: 18px; color: #eb3c3c;"
+                       class="fa p-2 btnTest btnDelete">Delete</a>
+                </span>
+                </td>
+
+
+                <td width="15px">
+                    <span>
+                        <a href="{{ url_for('download', filename=filedata.filename) }}"
+                           style="font-size: 18px; color: #252525;"
+                           class="fa p-2"><i style="font-size: 24px" class="fa">&#xf019;</i></a>
+                    </span>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <!--  Table Section End  -->
+
+</div>
+
+<footer class="footer">
+    <div class="container text-center">
+
+
+        <p class="footer-text">&copy; 2024 TANGIBLY. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+          <h4>The generation of results will take some time. Please download the file once the process is finished.</h4>
+      </div>
+         <div class="modal-btn2">
+        <button type="button" onClick="refreshPage()" id="" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="dummyModal" tabindex="-1" role="dialog"  aria-labelledby="dummyModalLabel" aria-hidden="true" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body-1">
+          <h4 style="font-size: 30px;">Are you sure you want to delete?</h4>
+
+          <div class="modal-btn">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" data-id="0" id="delete_button" onclick="proceedWithDelete()" >Delete</button>
+          </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<!-- Main Scripts-->
+ <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+
+
+
+<script>
+function refreshPage(){
+    window.location.reload();
+}
+
+
+    function reloadPage() {
+        location.reload(true); // Passing true forces a reload from the server
+    }
+
+
+        hideLoader();
+        // Open the "Create" tab by default
+        setTimeout(function() {
+          hideLoader();
+        }, 4000);
+
+        function showLoader() {
+          document.getElementById('loader-overlay').style.display = 'flex';
+        }
+        function hideLoader() {
+          document.getElementById('loader-overlay').style.display = 'none';
+        }
+
+        $(document).ready(function () {
+            $("#submit_btn").click(function (e) {
+                e.preventDefault();
+
+            var promptText = $("#promptText").val();
+            var prompt1 = $("#trainingFileUploader").val();
+            var prompt2 = $("#client_name").val();
+            var review_no = $("#review").val();
+            var file_Type;
+            if (document.getElementById('pdfRadio').checked) {
+                file_Type = document.getElementById('pdfRadio').value;
+            } else if (document.getElementById('docRadio').checked) {
+                file_Type = document.getElementById('docRadio').value;
+            }else if (document.getElementById('csvRadio').checked) {
+                file_Type = document.getElementById('csvRadio').value;
+            }
+
+            // Create a FormData object to send the data to the server
+            console.log("file_Type",file_Type);
+            console.log('prompt1', prompt1);
+            console.log('prompt2', prompt2);
+            console.log('review_no', review);
+
+            if (prompt1 === '' && prompt2 === '') {
+                $("#validationMessage").text('one field is required to fill.');
+                return;
+            }
+            else {
+                $("#validationMessage").text('');
+            }
+
+            if (promptText === '') {
+                $("#validationMessage").text('Prompt is required');
+                return;
+            }else {
+                $("#validationMessage").text('');
+            }
+            if (review_no === '' || isNaN(review_no)) {
+                $("#validationMessage").text('Review number is required and must be numeric.');
+                return;
+            } else {
+                $("#validationMessage").text('');
+            }
+                showLoader();
+                var formData = new FormData($("#yourFormId")[0]);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/process_message',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        hideLoader();
+                        $("#yourFormId")[0].reset();
+                        $("#successMessage").text(data.message);
+
+                        setTimeout(function() {
+                            $("#successMessage").text(''); // Clear success message after 5 seconds
+                        }, 11000);
+                            $('#exampleModal').modal('show');
+
+                        // reloadPage(); // Reload the page after a successful request
+                    },
+                    error: function (error) {
+                        hideLoader();
+                        $("#errorMessage").text("");
+                        $("#yourFormId")[0].reset();
+                        setTimeout(function() {
+                            $("#errorMessage").text(''); // Clear success message after 5 seconds
+                        }, 11000);
+                            $('#exampleModal').modal('show');
+
+                    }
+                });
+            });
+        });
+</script>
+<script>
+    function customConfirm(message, callback) {
+        var confirmation = document.createElement('div');
+        confirmation.innerHTML = '<div class="modal fade" id="customConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="customConfirmationModalLabel" aria-hidden="true"> \
+        <div class="modal-dialog" role="document"> \
+        <div class="modal-content"> \
+        <div class="modal-body custom-confirm-body">' + message + '</div> \
+        <div class="modal-footer justify-content-center"> \
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> \
+        <button type="button" class="btn btn-danger" id="confirmButton">Delete</button> \
+        </div></div></div></div>';
+
+        document.body.appendChild(confirmation);
+
+        var confirmButton = confirmation.querySelector('#confirmButton');
+        confirmButton.addEventListener('click', function() {
+            callback(true);
+            $('#customConfirmationModal').modal('hide');
+        });
+
+        $('#customConfirmationModal').modal('show');
+    }
+
+    function proceedWithDelete(fileId) {
+        customConfirm("Are you sure you want to delete this file?", function(result) {
+            if(result) {
+                fetch('/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `file_id=${fileId}`
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("File deleted successfully");
+                        location.reload(); // Reload the page after successful deletion
+                    } else {
+                        throw new Error('Failed to delete file');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to delete file. Please try again.');
+                });
+            }
+        });
+    }
+
+    document.querySelectorAll('.btnDelete').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default behavior of the link
+            let fileId = this.dataset.id;
+            proceedWithDelete(fileId);
+        });
+    });
+</script>
+
+<style>
+    .custom-confirm-body {
+        font-size: 18px;
+    }
+</style>
+
+<script>
+    // Function to refresh the page
+    function refreshPage() {
+        location.reload(true); // Reload the page from the server
+    }
+
+    // Set interval to call refreshPage every minute (60 seconds)
+    setInterval(refreshPage, 120000);
+    console.log('page refresh')
+</script>
+
+<script>
+    // Function to validate the form
+    function validateForm(event) {
+        var trainingFile = document.getElementById("trainingFileUploader").value;
+        var clientName = document.getElementById("client_name").value;
+
+        // Check if both fields are empty
+        if (trainingFile === "" && clientName === "") {
+            // If both fields are empty, prevent form submission
+            event.preventDefault();
+            alert("At least one field is required to be filled.");
+        }
+    }
+
+    // Add event listener to the form for form submission
+    document.getElementById("yourFormId").addEventListener("submit", validateForm);
+</script>
+</html>

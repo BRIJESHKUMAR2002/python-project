@@ -1,0 +1,46 @@
+create a summary for the case
+
+
+
+Title should include:
+line 1: named parties
+line 2: the year of the decision, state of filing, case number that has an embedded link to the case on google scholar
+line 3: name of judge
+
+
+
+In each of the 6 categories use these rules:
+- use no more than 4 sentences for each category
+- each category should have a header in bold that are the words before the period
+- Use the words 'trade secret' at least 5 times throughout the summary and put the words in boldface
+
+
+
+If an appeal was filed on this decision, make note of it at the end of the summary
+
+
+
+If this decision is an appeal, make note in the summary section
+
+
+
+Summary. Summarize the key fact patterns and the key claims, state it was filed and if it was a DTSA claim
+Decision. Summarize the decision and make it clear who won
+Contracts. Summarize the Types of contracts that were discussed in the case, put the contracts in boldface
+Legal significance. Point out any specific points of significance of this case
+Financial Judgment. What, if any, monetary awards were awarded. Put any numbers in boldface and underline.
+Key Takeaways. Two key lessons that come out of this case that could help other companies in their trade secret management.
+
+
+Waymo v. Uber on trade secret misappropriation
+
+
+
+
+
+
+sudo /etc/init.d/apache2 stop
+sudo /opt/lampp/lampp stop
+sudo /etc/init.d/mysql stop
+sudo service mysql stop
+sudo /opt/lampp/lampp start
